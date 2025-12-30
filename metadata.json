@@ -1,0 +1,7 @@
+{
+  "name": "careshop",
+  "description": "Plataforma de bienestar integral con tecnología avanzada, gestión de recetas y asistencia virtual experta.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
