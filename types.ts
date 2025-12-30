@@ -14,7 +14,14 @@ export enum PrescriptionStatus {
   NotRequired = 'NotRequired'
 }
 
+export interface User {
+  email: string;
+  role: 'superadmin' | 'store_admin';
+  storeId?: string;
+}
+
 export interface StoreConfig {
+  id?: string;
   name: string;
   primaryColor: string;
   accentColor: string;
@@ -22,6 +29,7 @@ export interface StoreConfig {
   odooDb: string;
   odooUser: string;
   odooKey: string;
+  status?: 'active' | 'pending' | 'error';
 }
 
 export interface Product {
