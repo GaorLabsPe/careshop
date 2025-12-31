@@ -45,6 +45,7 @@ const AppContent: React.FC = () => {
       currencySymbol: 'S/',
       currencyCode: 'PEN',
       locale: 'es-PE',
+      country: 'Perú',
       mobilePayments: [
         { id: '1', name: 'Yape', identifier: '999888777', qrCodeUrl: '', isActive: true },
         { id: '2', name: 'Plin', identifier: '999888777', qrCodeUrl: '', isActive: true }
@@ -99,7 +100,6 @@ const AppContent: React.FC = () => {
 
   const [categoryMappings, setCategoryMappings] = useState<WebCategoryMap[]>([]);
 
-  // Efecto de persistencia global
   useEffect(() => {
     localStorage.setItem('store_settings', JSON.stringify(settings));
     localStorage.setItem('odoo_session', JSON.stringify(session));
@@ -177,7 +177,6 @@ const AppContent: React.FC = () => {
                   <ul className="space-y-3 text-sm">
                     <li><button onClick={() => navigate('home')} className="hover:text-white transition-colors">Inicio</button></li>
                     <li><button onClick={() => navigate('tracking')} className="hover:text-white transition-colors">Rastreo</button></li>
-                    <li><button className="hover:text-white transition-colors">Farmacias</button></li>
                   </ul>
                 </div>
 
@@ -186,7 +185,7 @@ const AppContent: React.FC = () => {
                   <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all">
                     <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg"><MessageCircle size={20} /></div>
                     <div className="text-left">
-                      <span className="block text-xs font-black text-white">Central WhatsApp</span>
+                      <span className="block text-xs font-black text-white">WhatsApp</span>
                       <span className="text-[10px] text-emerald-400 font-bold">Respuesta inmediata</span>
                     </div>
                   </a>
