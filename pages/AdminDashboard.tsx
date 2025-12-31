@@ -7,7 +7,7 @@ import {
   Store, Trash, ClipboardList, Truck,
   Instagram, Facebook, Music2, MessageCircle, 
   Globe, Flag, Image as ImageIcon, Camera, Upload,
-  QrCode, Edit3, Save
+  QrCode, Edit3, Save, Filter, CheckSquare, Square
 } from 'lucide-react';
 import { OdooService } from '../services/odooService';
 import { OdooSession, StoreSettings, PickupLocation, WebCategoryMap, Category, HeroSlide, MobilePaymentMethod, Order, OrderStatus, Product } from '../types';
@@ -62,6 +62,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [companies, setCompanies] = useState<any[]>([]);
   const [odooProducts, setOdooProducts] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [catFilter, setCatFilter] = useState<string>('all');
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   
   const logoHeaderRef = useRef<HTMLInputElement>(null);
   const logoFooterRef = useRef<HTMLInputElement>(null);
@@ -73,7 +75,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     pass: session?.apiKey || ''
   });
 
-  // Efecto para cargar productos si hay sesión activa
   useEffect(() => {
     if (session) {
       loadOdooProducts();
@@ -103,6 +104,45 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  // Filtrado de productos para el catálogo
+  const filteredProducts = (odooProducts.length > 0 ? odooProducts : MOCK_PRODUCTS).filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCat = catFilter === 'all' || (p.category === catFilter || p.categ_id?.[1]?.includes(catFilter));
+    return matchesSearch && matchesCat;
+  });
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredProducts.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredProducts.map(p => p.id));
+    }
+  };
+
+  const toggleSelectOne = (id: number) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(i => i !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const bulkPublish = (publish: boolean) => {
+    if (selectedIds.length === 0) return;
+    let newPublished = [...publishedIds];
+    if (publish) {
+      // Agregar solo los que no están
+      selectedIds.forEach(id => {
+        if (!newPublished.includes(id)) newPublished.push(id);
+      });
+    } else {
+      // Quitar los seleccionados
+      newPublished = newPublished.filter(id => !selectedIds.includes(id));
+    }
+    setPublishedIds(newPublished);
+    setSelectedIds([]); // Limpiar selección después de acción
   };
 
   const togglePublish = (id: number) => {
@@ -229,56 +269,111 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <main className="flex-1 p-12 overflow-y-auto bg-slate-50">
         <div className="max-w-5xl mx-auto pb-20">
           
-          {/* CATALOGO */}
+          {/* CATALOGO MEJORADO */}
           {activeTab === 'catalog' && (
             <div className="space-y-8 animate-in fade-in">
               <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Catálogo de Productos</h2>
+                <div>
+                  <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">Catálogo</h2>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Gestiona la visibilidad de tus productos</p>
+                </div>
                 {session && (
-                   <button onClick={loadOdooProducts} className="bg-white border p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                   <button onClick={loadOdooProducts} className="bg-white border p-3 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
                      <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
                    </button>
                 )}
               </div>
-              <div className="bg-white p-8 rounded-[3rem] shadow-sm border space-y-6">
-                <div className="relative">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" />
+
+              {/* Barra de Filtros y Acciones */}
+              <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-1 w-full">
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     value={searchTerm} 
                     onChange={e => setSearchTerm(e.target.value)} 
-                    placeholder="Buscar por nombre..." 
-                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-4 pl-16 pr-6 text-sm font-bold" 
+                    placeholder="Buscar producto..." 
+                    className="w-full bg-slate-50 border rounded-2xl py-3 pl-14 pr-6 text-sm font-bold" 
                   />
                 </div>
-                
-                <div className="max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="flex gap-4 w-full md:w-auto">
+                  <div className="relative flex-1 md:w-64">
+                    <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={14} />
+                    <select 
+                      value={catFilter} 
+                      onChange={e => setCatFilter(e.target.value)}
+                      className="w-full bg-slate-50 border rounded-2xl py-3 pl-10 pr-6 text-[10px] font-black uppercase appearance-none cursor-pointer"
+                    >
+                      <option value="all">Todas las Categorías</option>
+                      {Object.values(Category).map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Acciones Masivas Flotantes */}
+              {selectedIds.length > 0 && (
+                <div className="bg-slate-900 text-white p-4 rounded-3xl flex items-center justify-between animate-in slide-in-from-top-4 shadow-2xl">
+                   <div className="flex items-center gap-4 ml-4">
+                      <span className="text-[10px] font-black uppercase tracking-widest">{selectedIds.length} seleccionados</span>
+                   </div>
+                   <div className="flex gap-2">
+                      <button onClick={() => bulkPublish(true)} className="px-6 py-2 bg-emerald-500 text-white text-[9px] font-black uppercase rounded-xl hover:bg-emerald-600 transition-colors">Publicar en Web</button>
+                      <button onClick={() => bulkPublish(false)} className="px-6 py-2 bg-rose-500 text-white text-[9px] font-black uppercase rounded-xl hover:bg-rose-600 transition-colors">Ocultar de Web</button>
+                      <button onClick={() => setSelectedIds([])} className="p-2 hover:bg-white/10 rounded-xl transition-colors"><X size={18} /></button>
+                   </div>
+                </div>
+              )}
+
+              <div className="bg-white rounded-[3rem] shadow-sm border overflow-hidden">
+                <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
                    <table className="w-full text-left">
                      <thead className="bg-slate-50 text-[10px] font-black uppercase text-slate-400 border-b sticky top-0 z-10">
                        <tr>
+                         <th className="px-8 py-4 w-10">
+                            <button onClick={toggleSelectAll} className="text-slate-300 hover:text-slate-900 transition-colors">
+                               {selectedIds.length === filteredProducts.length ? <CheckSquare size={20} className="text-emerald-500" /> : <Square size={20} />}
+                            </button>
+                         </th>
                          <th className="px-6 py-4">Producto</th>
-                         <th className="px-6 py-4 text-center">Visible Web</th>
+                         <th className="px-6 py-4">Categoría ERP</th>
+                         <th className="px-6 py-4 text-center">Estado Web</th>
                        </tr>
                      </thead>
                      <tbody className="divide-y">
-                       {(odooProducts.length > 0 ? odooProducts : MOCK_PRODUCTS).filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).map(p => {
+                       {filteredProducts.length === 0 ? (
+                         <tr><td colSpan={4} className="py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest italic">No se encontraron productos con estos filtros</td></tr>
+                       ) : (
+                        filteredProducts.map(p => {
                          const isPub = publishedIds.includes(p.id);
+                         const isSelected = selectedIds.includes(p.id);
                          return (
-                           <tr key={p.id} className="hover:bg-slate-50/50">
+                           <tr key={p.id} className={`hover:bg-slate-50 transition-colors ${isSelected ? 'bg-emerald-50/30' : ''}`}>
+                             <td className="px-8 py-5">
+                                <button onClick={() => toggleSelectOne(p.id)} className="text-slate-200 hover:text-emerald-500 transition-colors">
+                                   {isSelected ? <CheckSquare size={18} className="text-emerald-500" /> : <Square size={18} />}
+                                </button>
+                             </td>
                              <td className="px-6 py-5">
-                                <p className="font-black text-sm text-slate-900 uppercase tracking-tight leading-none mb-1">{p.name}</p>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">ID: {p.id}</p>
+                                <p className="font-black text-xs text-slate-900 uppercase tracking-tight leading-tight mb-1">{p.name}</p>
+                                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em]">ID: {p.id}</p>
+                             </td>
+                             <td className="px-6 py-5">
+                                <span className="text-[9px] font-black text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-lg">
+                                  {p.categ_id?.[1] || p.category || 'General'}
+                                </span>
                              </td>
                              <td className="px-6 py-5 text-center">
                                <button 
                                 onClick={() => togglePublish(p.id)} 
-                                className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${isPub ? 'bg-emerald-500 text-white shadow-lg' : 'bg-slate-100 text-slate-400'}`}
+                                className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${isPub ? 'bg-emerald-100 text-emerald-700 shadow-sm' : 'bg-slate-100 text-slate-400 opacity-60'}`}
                                >
-                                 {isPub ? 'Publicado' : 'Oculto'}
+                                 {isPub ? 'Visible' : 'Oculto'}
                                </button>
                              </td>
                            </tr>
                          )
-                       })}
+                       })
+                       )}
                      </tbody>
                    </table>
                 </div>
