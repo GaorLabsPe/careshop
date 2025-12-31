@@ -28,6 +28,14 @@ export interface HeroSlide {
   isActive: boolean;
 }
 
+export interface MobilePaymentMethod {
+  id: string;
+  name: string;
+  identifier: string; // Número, Email o ID
+  qrCode?: string;
+  isActive: boolean;
+}
+
 export interface Product {
   id: string;
   odooId: number;
@@ -72,10 +80,13 @@ export interface StoreSettings {
   footerLogoUrl?: string;
   primaryColor: string;
   footerText: string;
-  yapeNumber?: string;
-  yapeQr?: string;
-  plinNumber?: string;
-  plinQr?: string;
+  // Localización
+  currencySymbol: string;
+  currencyCode: string;
+  locale: string;
+  // Pagos dinámicos
+  mobilePayments: MobilePaymentMethod[];
+  // Contacto & Redes
   whatsappNumber?: string;
   socialInstagram?: string;
   socialFacebook?: string;

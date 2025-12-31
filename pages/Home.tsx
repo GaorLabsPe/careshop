@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Zap, Star, HeartPulse, Pill, Baby, Apple, User, Dumbbell, Sparkles, ArrowRight, Truck, ChevronDown, ChevronUp
 } from 'lucide-react';
-import { Product, HeroSlide } from '../types';
+import { Product, HeroSlide, StoreSettings } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import HeroSlider from '../components/HeroSlider';
 
@@ -11,9 +11,10 @@ interface HomeProps {
   onNavigate: (page: string, params?: any) => void;
   externalProducts?: Product[];
   heroSlides: HeroSlide[];
+  storeSettings: StoreSettings;
 }
 
-const Home: React.FC<HomeProps> = ({ onNavigate, externalProducts = [], heroSlides = [] }) => {
+const Home: React.FC<HomeProps> = ({ onNavigate, externalProducts = [], heroSlides = [], storeSettings }) => {
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -103,6 +104,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate, externalProducts = [], heroSlid
                 key={product.id} 
                 product={product} 
                 onViewDetails={() => onNavigate('product', { id: product.id })}
+                storeSettings={storeSettings}
               />
             ))
           ) : (
@@ -123,18 +125,18 @@ const Home: React.FC<HomeProps> = ({ onNavigate, externalProducts = [], heroSlid
                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Compromiso con la Familia</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-ubuntu text-white tracking-tighter leading-tight">
-              ¿Sin tiempo para salir? <br /> <span className="text-emerald-500">careShop vuela por ti.</span>
+              ¿Sin tiempo para salir? <br /> <span className="text-emerald-500">{storeSettings.storeName} vuela por ti.</span>
             </h2>
             <p className="text-slate-400 text-base sm:text-lg font-medium leading-relaxed max-w-md mx-auto md:mx-0">
-              Delivery especializado en 90 minutos para todo Lima. Seguridad garantizada en el transporte de medicamentos delicados y productos para tu bebé.
+              Delivery especializado en tiempo récord. Seguridad garantizada en el transporte de medicamentos delicados y productos para tu bebé.
             </p>
             <div className="flex justify-center md:justify-start gap-8 sm:gap-10">
               <div className="flex flex-col">
                 <span className="text-3xl sm:text-4xl font-ubuntu text-orange-500">90min</span>
-                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Promedio Lima</span>
+                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Promedio Estimado</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-3xl sm:text-4xl font-ubuntu text-emerald-600">S/ 0</span>
+                <span className="text-3xl sm:text-4xl font-ubuntu text-emerald-600">{storeSettings.currencySymbol} 0</span>
                 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Envíos Gratis*</span>
               </div>
             </div>

@@ -1,15 +1,16 @@
 
 import React from 'react';
 import { ShoppingCart, Heart, Star, Info, Zap } from 'lucide-react';
-import { Product, PrescriptionStatus } from '../types';
+import { Product, PrescriptionStatus, StoreSettings } from '../types';
 import { useCart } from '../context/CartContext';
 
 interface ProductCardProps {
   product: Product;
   onViewDetails: () => void;
+  storeSettings: StoreSettings;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails, storeSettings }) => {
   const { addToCart } = useCart();
 
   return (
@@ -58,10 +59,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onViewDetails
         <div className="mt-auto">
           <div className="flex flex-col mb-6">
             {product.oldPrice && (
-              <span className="text-sm text-slate-300 line-through font-bold">S/ {product.oldPrice.toFixed(2)}</span>
+              <span className="text-sm text-slate-300 line-through font-bold">{storeSettings.currencySymbol} {product.oldPrice.toFixed(2)}</span>
             )}
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-ubuntu text-slate-900 tracking-tighter">S/ {product.price.toFixed(2)}</span>
+              <span className="text-4xl font-ubuntu text-slate-900 tracking-tighter">{storeSettings.currencySymbol} {product.price.toFixed(2)}</span>
               <span className="text-[9px] font-ubuntu font-bold text-primary bg-emerald-50 px-2 py-0.5 rounded uppercase">Club</span>
             </div>
           </div>

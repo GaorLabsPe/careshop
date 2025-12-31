@@ -2,6 +2,7 @@
 import React from 'react';
 import { X, ShoppingBag, Trash2, Minus, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { StoreSettings } from '../types';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -11,6 +12,12 @@ interface CartDrawerProps {
 
 const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) => {
   const { cart, removeFromCart, updateQuantity, totalPrice, totalItems } = useCart();
+  
+  // Recuperar símbolo de moneda de localStorage o settings
+  const [settings, setSettings] = React.useState<StoreSettings>(() => {
+    const saved = localStorage.getItem('store_settings');
+    return saved ? JSON.parse(saved) : { currencySymbol: 'S/' };
+  });
 
   if (!isOpen) return null;
 
@@ -56,7 +63,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] font-bold text-emerald-500 uppercase mb-1">{item.brand}</p>
                     <h4 className="font-bold text-slate-800 text-sm mb-1 truncate">{item.name}</h4>
-                    <p className="text-emerald-600 font-bold mb-3">${item.price.toFixed(2)}</p>
+                    <p className="text-emerald-600 font-bold mb-3">{settings.currencySymbol} {item.price.toFixed(2)}</p>
                     
                     <div className="flex items-center justify-between">
                       <div className="flex items-center border rounded-lg bg-slate-50 overflow-hidden">
@@ -92,7 +99,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
             <div className="border-t px-6 py-8 bg-slate-50 space-y-4">
               <div className="flex justify-between text-slate-600 text-sm">
                 <span>Subtotal</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>{settings.currencySymbol} {totalPrice.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-slate-600 text-sm">
                 <span>Envío</span>
@@ -100,7 +107,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, onCheckout }) 
               </div>
               <div className="flex justify-between text-xl font-extrabold text-slate-900">
                 <span>Total</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>{settings.currencySymbol} {totalPrice.toFixed(2)}</span>
               </div>
               
               <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-center gap-3">

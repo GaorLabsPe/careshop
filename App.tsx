@@ -29,6 +29,10 @@ const AppContent: React.FC = () => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (!Array.isArray(parsed.heroSlides)) parsed.heroSlides = [];
+        if (!Array.isArray(parsed.mobilePayments)) parsed.mobilePayments = [];
+        if (!parsed.currencySymbol) parsed.currencySymbol = 'S/';
+        if (!parsed.currencyCode) parsed.currencyCode = 'PEN';
+        if (!parsed.locale) parsed.locale = 'es-PE';
         return parsed;
       }
     } catch (e) { console.error("Settings load error", e); }
@@ -39,7 +43,14 @@ const AppContent: React.FC = () => {
       footerLogoUrl: '',
       primaryColor: '#10B981',
       footerText: '© 2024 CARESHOP FARMACIAS PERÚ',
-      whatsappNumber: '999888777',
+      currencySymbol: 'S/',
+      currencyCode: 'PEN',
+      locale: 'es-PE',
+      mobilePayments: [
+        { id: '1', name: 'Yape', identifier: '999888777', isActive: true },
+        { id: '2', name: 'Plin', identifier: '999888777', isActive: true }
+      ],
+      whatsappNumber: '51999888777',
       socialInstagram: 'https://instagram.com',
       socialFacebook: 'https://facebook.com',
       socialTikTok: 'https://tiktok.com',
@@ -106,13 +117,6 @@ const AppContent: React.FC = () => {
   }, [settings, session, publishedIds, categoryMappings, pickupLocations]);
 
   useEffect(() => {
-    if (settings.promoActive && currentPage === 'home') {
-      const timer = setTimeout(() => setIsPromoOpen(true), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [settings.promoActive, currentPage]);
-
-  useEffect(() => {
     const sync = async () => {
       if (session) {
         try {
@@ -145,10 +149,10 @@ const AppContent: React.FC = () => {
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'home': return <Home onNavigate={navigate} externalProducts={products} heroSlides={settings.heroSlides} />;
+      case 'home': return <Home onNavigate={navigate} externalProducts={products} heroSlides={settings.heroSlides} storeSettings={settings} />;
       case 'product': 
         const prod = products.find(p => p.id === pageParams?.id);
-        return <ProductDetail productId={pageParams?.id} onNavigate={navigate} externalProduct={prod} />;
+        return <ProductDetail productId={pageParams?.id} onNavigate={navigate} externalProduct={prod} storeSettings={settings} />;
       case 'checkout': return <Checkout onNavigate={navigate} pickupLocations={pickupLocations} settings={settings} />;
       case 'admin': return (
         <AdminDashboard 
@@ -160,7 +164,7 @@ const AppContent: React.FC = () => {
           pickupLocations={pickupLocations} setPickupLocations={setPickupLocations}
         />
       );
-      default: return <Home onNavigate={navigate} externalProducts={products} heroSlides={settings.heroSlides} />;
+      default: return <Home onNavigate={navigate} externalProducts={products} heroSlides={settings.heroSlides} storeSettings={settings} />;
     }
   };
 
@@ -213,7 +217,7 @@ const AppContent: React.FC = () => {
                         </div>
                         <div className="text-left">
                           <span className="block text-lg font-black text-white leading-none">GaorSystem</span>
-                          <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Perú</span>
+                          <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Global</span>
                         </div>
                       </div>
                     </a>
@@ -237,7 +241,7 @@ const AppContent: React.FC = () => {
                   </svg>
                 </div>
                 <div className="absolute right-24 bg-white text-slate-800 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all">
-                  ¿Dudas o Consultas?
+                  ¿Consultas? Escríbenos
                 </div>
               </a>
             )}
