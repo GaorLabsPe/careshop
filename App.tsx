@@ -11,7 +11,7 @@ import { CartProvider } from './context/CartContext';
 import { PRODUCTS as MOCK_PRODUCTS } from './data/mockData';
 import { OdooService } from './services/odooService';
 import { Product, StoreSettings, PickupLocation, WebCategoryMap, OdooSession, HeroSlide } from './types';
-import { ShoppingBag, Instagram, Facebook, Music2 } from 'lucide-react';
+import { ShoppingBag, Instagram, Facebook, Music2, Rocket } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -24,8 +24,16 @@ const AppContent: React.FC = () => {
   const clickTimer = useRef<any>(null);
 
   const [settings, setSettings] = useState<StoreSettings>(() => {
-    const saved = localStorage.getItem('store_settings');
-    return saved ? JSON.parse(saved) : {
+    try {
+      const saved = localStorage.getItem('store_settings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (!Array.isArray(parsed.heroSlides)) parsed.heroSlides = [];
+        return parsed;
+      }
+    } catch (e) { console.error("Settings load error", e); }
+    
+    return {
       storeName: 'careShop',
       logoUrl: '', 
       footerLogoUrl: '',
@@ -57,25 +65,33 @@ const AppContent: React.FC = () => {
   });
 
   const [session, setSession] = useState<OdooSession | null>(() => {
-    const saved = localStorage.getItem('odoo_session');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('odoo_session');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) { return null; }
   });
 
   const [publishedIds, setPublishedIds] = useState<number[]>(() => {
-    const saved = localStorage.getItem('published_ids');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('published_ids');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) { return []; }
   });
 
   const [categoryMappings, setCategoryMappings] = useState<WebCategoryMap[]>(() => {
-    const saved = localStorage.getItem('category_mappings');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('category_mappings');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) { return []; }
   });
 
   const [pickupLocations, setPickupLocations] = useState<PickupLocation[]>(() => {
-    const saved = localStorage.getItem('pickup_locations');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', name: 'Sede Principal Lima', address: 'Av. Arequipa 1234', city: 'Lima', phone: '01 444 5555' }
-    ];
+    try {
+      const saved = localStorage.getItem('pickup_locations');
+      return saved ? JSON.parse(saved) : [
+        { id: '1', name: 'Sede Principal Lima', address: 'Av. Arequipa 1234', city: 'Lima', phone: '01 444 5555' }
+      ];
+    } catch (e) { return []; }
   });
 
   useEffect(() => {
@@ -177,18 +193,30 @@ const AppContent: React.FC = () => {
                     </div>
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] max-w-xs text-center md:text-left leading-relaxed">{settings.footerText}</p>
                     <div className="flex gap-4">
-                      {settings.socialInstagram && <a href={settings.socialInstagram} target="_blank" className="hover:text-white transition-colors"><Instagram size={20} /></a>}
-                      {settings.socialFacebook && <a href={settings.socialFacebook} target="_blank" className="hover:text-white transition-colors"><Facebook size={20} /></a>}
-                      {settings.socialTikTok && <a href={settings.socialTikTok} target="_blank" className="hover:text-white transition-colors"><Music2 size={20} /></a>}
+                      {settings.socialInstagram && <a href={settings.socialInstagram} target="_blank" rel="noreferrer" className="hover:text-white transition-colors"><Instagram size={20} /></a>}
+                      {settings.socialFacebook && <a href={settings.socialFacebook} target="_blank" rel="noreferrer" className="hover:text-white transition-colors"><Facebook size={20} /></a>}
+                      {settings.socialTikTok && <a href={settings.socialTikTok} target="_blank" rel="noreferrer" className="hover:text-white transition-colors"><Music2 size={20} /></a>}
                     </div>
                   </div>
                   
-                  <div className="flex flex-col items-center md:items-end gap-6">
-                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Tecnología Farmacéutica Segura</p>
-                    <div className="flex gap-8 grayscale opacity-40 hover:opacity-100 transition-opacity">
-                       <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-6" alt="Visa" />
-                       <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6" alt="Mastercard" />
-                    </div>
+                  <div className="flex flex-col items-center md:items-end gap-6 text-center md:text-right">
+                    <a 
+                      href="https://gaorsystem.vercel.app/" 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="group flex flex-col items-center md:items-end gap-2 p-6 bg-white/5 rounded-[2rem] border border-white/10 hover:bg-white/10 transition-all"
+                    >
+                      <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em]">Plataforma desarrollada por</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                          <Rocket size={20} className="text-indigo-600" />
+                        </div>
+                        <div className="text-left">
+                          <span className="block text-lg font-black text-white leading-none">GaorSystem</span>
+                          <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Perú</span>
+                        </div>
+                      </div>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -200,14 +228,15 @@ const AppContent: React.FC = () => {
                 href={`https://wa.me/${settings.whatsappNumber}?text=Hola,%20necesito%20ayuda%20con%20mi%20pedido`}
                 target="_blank"
                 rel="noreferrer"
-                className="fixed bottom-10 left-10 z-[60] bg-[#25D366] text-white w-20 h-20 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all group"
+                className="fixed bottom-10 right-10 z-[60] bg-[#25D366] text-white w-20 h-20 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all group animate-bounce"
+                style={{ animationDuration: '3s' }}
               >
                 <div className="relative w-full h-full flex items-center justify-center">
                   <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.417-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.305 1.652zm6.599-3.835c1.516.893 3.188 1.364 4.891 1.365 5.398 0 9.79-4.393 9.793-9.793 0-2.614-1.017-5.072-2.865-6.922-1.848-1.85-4.305-2.867-6.919-2.867-5.398 0-9.791 4.393-9.793 9.793 0 1.729.456 3.419 1.321 4.908l-.995 3.635 3.72-.976zm11.381-7.103c-.311-.156-1.841-.908-2.126-1.012-.285-.104-.492-.156-.7.156-.207.312-.803 1.012-.985 1.22-.181.208-.363.234-.674.078-.311-.156-1.314-.484-2.503-1.545-.925-.825-1.549-1.844-1.73-2.156-.181-.312-.019-.481.136-.636.141-.139.311-.364.466-.546.156-.182.207-.312.311-.52.104-.208.052-.39-.026-.546-.078-.156-.7-1.688-.959-2.312-.252-.607-.51-.524-.7-.534-.18-.01-.388-.012-.597-.012-.208 0-.544.078-.83.39-.285.312-1.089 1.066-1.089 2.6 0 1.533 1.115 3.016 1.271 3.224.156.208 2.192 3.348 5.312 4.698.742.32 1.32.512 1.772.656.745.236 1.423.203 1.958.123.596-.088 1.841-.753 2.1-1.481.259-.727.259-1.351.181-1.481-.078-.13-.285-.208-.596-.364z"/>
                   </svg>
                 </div>
-                <div className="absolute left-24 bg-white text-slate-800 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all">
+                <div className="absolute right-24 bg-white text-slate-800 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all">
                   ¿Dudas o Consultas?
                 </div>
               </a>

@@ -123,17 +123,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       cta: "Ver Catálogo",
       isActive: true
     };
-    setSettings({...settings, heroSlides: [...settings.heroSlides, slide]});
+    setSettings({...settings, heroSlides: [...(settings.heroSlides || []), slide]});
   };
 
   const updateSlideField = (idx: number, field: keyof HeroSlide, value: any) => {
-    const newSlides = [...settings.heroSlides];
+    const newSlides = [...(settings.heroSlides || [])];
     newSlides[idx] = { ...newSlides[idx], [field]: value };
     setSettings({...settings, heroSlides: newSlides});
   };
 
   const removeSlide = (id: string) => {
-    setSettings({...settings, heroSlides: settings.heroSlides.filter(s => s.id !== id)});
+    setSettings({...settings, heroSlides: (settings.heroSlides || []).filter(s => s.id !== id)});
   };
 
   const filteredOdooProducts = odooProducts.filter(p => 
@@ -263,7 +263,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                 {/* Slides Manager */}
                 <div className="grid grid-cols-1 gap-8">
-                  {settings.heroSlides.map((slide, idx) => (
+                  {(settings.heroSlides || []).map((slide, idx) => (
                     <div key={slide.id} className="bg-white p-10 rounded-[3.5rem] shadow-sm border border-slate-100 space-y-8 animate-in slide-in-from-bottom-5">
                       <div className="flex justify-between items-center border-b pb-6">
                         <div className="flex items-center gap-4">
@@ -315,7 +315,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </div>
                     </div>
                   ))}
-                  {settings.heroSlides.length === 0 && (
+                  {(!settings.heroSlides || settings.heroSlides.length === 0) && (
                      <div className="bg-white p-20 rounded-[3.5rem] border-4 border-dashed border-slate-100 flex flex-col items-center justify-center text-slate-300">
                         <Layout size={64} className="mb-4 opacity-20" />
                         <p className="text-[10px] font-black uppercase tracking-widest">No hay diapositivas configuradas</p>
@@ -585,23 +585,34 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                 </div>
                 <pre className="text-emerald-400 font-mono text-sm leading-relaxed overflow-x-auto selection:bg-emerald-900/50">
-{`-- 1. Estructura para Configuraciones Globales
-ALTER TABLE store_settings 
-ADD COLUMN IF NOT EXISTS yape_number TEXT,
-ADD COLUMN IF NOT EXISTS yape_qr TEXT,
-ADD COLUMN IF NOT EXISTS plin_number TEXT,
-ADD COLUMN IF NOT EXISTS plin_qr TEXT,
-ADD COLUMN IF NOT EXISTS whatsapp_number TEXT,
-ADD COLUMN IF NOT EXISTS social_instagram TEXT,
-ADD COLUMN IF NOT EXISTS social_facebook TEXT,
-ADD COLUMN IF NOT EXISTS social_tiktok TEXT,
-ADD COLUMN IF NOT EXISTS promo_active BOOLEAN DEFAULT true,
-ADD COLUMN IF NOT EXISTS promo_title TEXT,
-ADD COLUMN IF NOT EXISTS promo_image TEXT,
-ADD COLUMN IF NOT EXISTS logo_url TEXT,
-ADD COLUMN IF NOT EXISTS footer_logo_url TEXT;
+{`-- 1. Estructura Completa para Configuraciones Globales
+CREATE TABLE IF NOT EXISTS store_settings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  store_name TEXT NOT NULL DEFAULT 'careShop',
+  primary_color TEXT DEFAULT '#10B981',
+  footer_text TEXT,
+  logo_url TEXT,
+  footer_logo_url TEXT,
+  yape_number TEXT,
+  yape_qr TEXT,
+  plin_number TEXT,
+  plin_qr TEXT,
+  whatsapp_number TEXT,
+  social_instagram TEXT,
+  social_facebook TEXT,
+  social_tiktok TEXT,
+  promo_active BOOLEAN DEFAULT true,
+  promo_title TEXT,
+  promo_image TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
 
--- 2. Tabla para Sedes Físicas
+-- Insertar valores iniciales si la tabla está vacía
+INSERT INTO store_settings (id) 
+SELECT uuid_generate_v4() 
+WHERE NOT EXISTS (SELECT 1 FROM store_settings LIMIT 1);
+
+-- 2. Tabla para Sedes Físicas (Pickup)
 CREATE TABLE IF NOT EXISTS pickup_locations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
@@ -612,7 +623,7 @@ CREATE TABLE IF NOT EXISTS pickup_locations (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
--- 3. Tabla para Diapositivas (Hero Slides)
+-- 3. Tabla para Diapositivas Dinámicas (Hero Slides)
 CREATE TABLE IF NOT EXISTS hero_slides (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   badge TEXT,
@@ -627,19 +638,28 @@ CREATE TABLE IF NOT EXISTS hero_slides (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
--- 4. Registro de Productos Publicados
-CREATE TABLE IF NOT EXISTS published_products (
-  odoo_product_id INTEGER PRIMARY KEY,
-  published_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+-- 4. Registro de Sesiones Odoo (Solo lectura para Admin)
+CREATE TABLE IF NOT EXISTS odoo_sessions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  url TEXT NOT NULL,
+  db TEXT NOT NULL,
+  username TEXT NOT NULL,
+  api_key TEXT NOT NULL,
+  company_id INTEGER,
+  last_sync TIMESTAMP WITH TIME ZONE DEFAULT now()
 );`}
                 </pre>
                 <div className="mt-12 flex items-center justify-between border-t border-emerald-900/30 pt-10">
-                   <p className="text-[10px] text-emerald-900/60 font-black uppercase tracking-widest">Script v2.4 • Pharmacy OS Core</p>
+                   <p className="text-[10px] text-emerald-900/60 font-black uppercase tracking-widest">Script v3.0 • Pharmacy OS Enterprise</p>
                    <button 
-                     onClick={() => { navigator.clipboard.writeText(`ALTER TABLE store_settings...`); alert("Copiado al Portapapeles"); }}
+                     onClick={() => { 
+                       const code = document.querySelector('pre')?.innerText || '';
+                       navigator.clipboard.writeText(code); 
+                       alert("Script completo copiado."); 
+                     }}
                      className="bg-emerald-600/10 hover:bg-emerald-600 text-emerald-600 hover:text-white px-8 py-3 rounded-xl border border-emerald-600/30 font-black uppercase text-[10px] tracking-widest transition-all"
                    >
-                     Copiar Script SQL
+                     Copiar Script SQL Completo
                    </button>
                 </div>
               </div>
