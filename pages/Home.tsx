@@ -97,7 +97,8 @@ const Home: React.FC<HomeProps> = ({ onNavigate, externalProducts = [], heroSlid
           <button onClick={() => onNavigate('shop')} className="text-[10px] font-ubuntu font-bold text-emerald-600 uppercase tracking-widest hover:underline">Ver todo el catálogo</button>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10">
+        {/* Cambiado de grid-cols-1 a grid-cols-2 en móvil */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-10">
           {externalProducts.length > 0 ? (
             externalProducts.map(product => (
               <ProductCard 
