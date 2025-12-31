@@ -59,11 +59,10 @@ export interface MobilePaymentMethod {
   id: string;
   name: string;
   identifier: string;
-  qrCodeUrl?: string; // URL de la imagen del QR
+  qrCodeUrl?: string;
   isActive: boolean;
 }
 
-// FIX: Added genericName and activeIngredient to Product interface to resolve mock data errors
 export interface Product {
   id: string;
   odooId: number;
@@ -87,7 +86,6 @@ export interface Product {
   published: boolean;
 }
 
-// FIX: Export CartItem interface to resolve CartContext error
 export interface CartItem extends Product {
   quantity: number;
 }
@@ -104,13 +102,14 @@ export interface OdooSession {
 
 export interface StoreSettings {
   storeName: string;
-  logoUrl?: string; // Header Logo
-  footerLogoUrl?: string; // Footer Logo
+  logoUrl?: string; 
+  footerLogoUrl?: string; 
   primaryColor: string;
   footerText: string;
   currencySymbol: string;
   currencyCode: string;
   locale: string;
+  country: string; // Nuevo campo
   mobilePayments: MobilePaymentMethod[];
   whatsappNumber?: string;
   socialInstagram?: string;

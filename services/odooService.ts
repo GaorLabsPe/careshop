@@ -56,7 +56,6 @@ export class OdooClient {
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/xml');
       
-      // Manejo de errores XML-RPC (Faults)
       const fault = doc.querySelector('fault');
       if (fault) {
         const faultValue = fault.querySelector('value');
@@ -65,9 +64,7 @@ export class OdooClient {
       }
 
       const valNode = doc.querySelector('param value');
-      if (!valNode) {
-        throw new Error('La respuesta de Odoo no contiene datos válidos.');
-      }
+      if (!valNode) throw new Error('Respuesta inválida de Odoo.');
 
       return parseValue(valNode);
     } catch (e: any) {
@@ -91,7 +88,7 @@ export const OdooService = {
   async connect(url: string, db: string, user: string, pass: string) {
     const client = new OdooClient(url, db);
     const uid = await client.authenticate(user, pass);
-    if (!uid) throw new Error("Credenciales inválidas o base de datos incorrecta.");
+    if (!uid) throw new Error("Credenciales inválidas.");
     this.client = client;
     return { uid, client };
   },
@@ -99,21 +96,15 @@ export const OdooService = {
   async fetchProducts(session: OdooSession, mappings: WebCategoryMap[], publishedIds: number[]): Promise<Product[]> {
     if (!this.client) return [];
     
-    const domain: any[][] = [
-      ['sale_ok', '=', true],
-      ['company_id', '=', session.companyId]
-    ];
-    
-    if (publishedIds.length > 0) {
-      domain.push(['id', 'in', publishedIds]);
-    } else {
-      return [];
-    }
+    const domain: any[][] = [['sale_ok', '=', true], ['company_id', '=', session.companyId]];
+    if (publishedIds.length > 0) domain.push(['id', 'in', publishedIds]);
+    else return [];
 
     const fields = ['id', 'name', 'list_price', 'qty_available', 'image_1920', 'categ_id', 'manufacturer_id', 'description_sale'];
     const raw = await this.client.execute(session.uid, session.apiKey, 'product.product', 'search_read', [domain], { fields });
 
     return raw.map((p: any) => {
+      // Buscar mapeo por ID de categoría de Odoo
       const mapping = mappings.find(m => m.odooCategoryId === p.categ_id?.[0]);
       return {
         id: `odoo-${p.id}`,
@@ -121,7 +112,7 @@ export const OdooService = {
         name: p.name,
         brand: p.manufacturer_id?.[1] || 'Genérico',
         price: p.list_price || 0,
-        category: mapping?.webCategory || Category.Medicamentos,
+        category: mapping?.webCategory || Category.Medicamentos, // Usar mapeo o default
         prescription: PrescriptionStatus.NotRequired,
         description: p.description_sale || '',
         dosage: '',
