@@ -15,6 +15,34 @@ export enum PrescriptionStatus {
   NotRequired = 'NotRequired'
 }
 
+export enum OrderStatus {
+  Received = 'received',
+  Validated = 'validated',
+  Preparing = 'preparing',
+  Shipped = 'shipped',
+  Delivered = 'delivered'
+}
+
+export interface OrderStep {
+  status: OrderStatus;
+  title: string;
+  desc: string;
+  time: string;
+  completed: boolean;
+}
+
+export interface Order {
+  id: string;
+  customerEmail: string;
+  customerName: string;
+  address: string;
+  total: number;
+  date: string;
+  status: OrderStatus;
+  items: any[];
+  history: OrderStep[];
+}
+
 export interface HeroSlide {
   id: string;
   title: string;
@@ -23,19 +51,19 @@ export interface HeroSlide {
   description: string;
   image: string;
   cta: string;
-  ctaLink?: string;
-  badge: string;
   isActive: boolean;
+  badge: string;
 }
 
 export interface MobilePaymentMethod {
   id: string;
   name: string;
-  identifier: string; // Número, Email o ID
-  qrCode?: string;
+  identifier: string;
+  qrCodeUrl?: string; // URL de la imagen del QR
   isActive: boolean;
 }
 
+// FIX: Added genericName and activeIngredient to Product interface to resolve mock data errors
 export interface Product {
   id: string;
   odooId: number;
@@ -57,9 +85,9 @@ export interface Product {
   registrationNumber: string;
   expiryDate: string;
   published: boolean;
-  odooCategoryId?: number;
 }
 
+// FIX: Export CartItem interface to resolve CartContext error
 export interface CartItem extends Product {
   quantity: number;
 }
@@ -76,17 +104,14 @@ export interface OdooSession {
 
 export interface StoreSettings {
   storeName: string;
-  logoUrl?: string;
-  footerLogoUrl?: string;
+  logoUrl?: string; // Header Logo
+  footerLogoUrl?: string; // Footer Logo
   primaryColor: string;
   footerText: string;
-  // Localización
   currencySymbol: string;
   currencyCode: string;
   locale: string;
-  // Pagos dinámicos
   mobilePayments: MobilePaymentMethod[];
-  // Contacto & Redes
   whatsappNumber?: string;
   socialInstagram?: string;
   socialFacebook?: string;
@@ -95,7 +120,6 @@ export interface StoreSettings {
   allowPickup: boolean;
   promoActive: boolean;
   promoImage?: string;
-  promoLink?: string;
   promoTitle?: string;
   heroSlides: HeroSlide[];
 }
