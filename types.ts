@@ -109,14 +109,20 @@ export interface StoreSettings {
   currencySymbol: string;
   currencyCode: string;
   locale: string;
-  country: string; // Nuevo campo
+  country: string;
+  // Operaciones
+  storeAddress: string;
+  storeCity: string;
+  storePhone: string;
+  allowDelivery: boolean;
+  allowPickup: boolean;
+  // Pagos y Redes
   mobilePayments: MobilePaymentMethod[];
   whatsappNumber?: string;
   socialInstagram?: string;
   socialFacebook?: string;
   socialTikTok?: string;
-  allowDelivery: boolean;
-  allowPickup: boolean;
+  // Marketing
   promoActive: boolean;
   promoImage?: string;
   promoTitle?: string;
