@@ -23,6 +23,11 @@ export enum OrderStatus {
   Delivered = 'delivered'
 }
 
+export enum UserRole {
+  Admin = 'admin',
+  Client = 'client'
+}
+
 export interface OrderStep {
   status: OrderStatus;
   title: string;
@@ -110,19 +115,16 @@ export interface StoreSettings {
   currencyCode: string;
   locale: string;
   country: string;
-  // Operaciones
   storeAddress: string;
   storeCity: string;
   storePhone: string;
   allowDelivery: boolean;
   allowPickup: boolean;
-  // Pagos y Redes
   mobilePayments: MobilePaymentMethod[];
   whatsappNumber?: string;
   socialInstagram?: string;
   socialFacebook?: string;
   socialTikTok?: string;
-  // Marketing
   promoActive: boolean;
   promoImage?: string;
   promoTitle?: string;

@@ -32,12 +32,12 @@ const AppContent: React.FC = () => {
     return {
       storeName: 'careShop',
       primaryColor: '#10B981',
-      footerText: '© 2024 CARESHOP FARMACIAS - TODOS LOS DERECHOS RESERVADOS',
+      footerText: '© 2025 FARMACIAS TECNOLÓGICAS - TODOS LOS DERECHOS RESERVADOS',
       currencySymbol: 'S/',
       currencyCode: 'PEN',
       locale: 'es-PE',
       country: 'Perú',
-      storeAddress: 'Av. Principal 123',
+      storeAddress: 'Sede Central Care',
       storeCity: 'Lima',
       storePhone: '01 444 5555',
       allowDelivery: true,
@@ -51,20 +51,10 @@ const AppContent: React.FC = () => {
       socialFacebook: '',
       socialTikTok: '',
       promoActive: true,
-      promoTitle: '¡BIENVENIDO A CARESHOP!',
+      promoTitle: '¡BIENVENIDO A TU SALUD DIGITAL!',
       promoImage: 'https://images.unsplash.com/photo-1576671081837-49000212a370?q=80&w=800',
       heroSlides: [
-        { 
-          id: '1', 
-          badge: "DELIVERY EXPRESS", 
-          title: "Cuidamos tu", 
-          highlight: "Bienestar", 
-          subtitle: "SALUD Y CONFIANZA", 
-          description: "Farmacia con tecnología avanzada para tu salud.", 
-          image: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=1600", 
-          cta: "Comprar Ahora", 
-          isActive: true 
-        }
+        { id: '1', badge: "DELIVERY EXPRESS", title: "Cuidamos tu", highlight: "Bienestar", subtitle: "FARMACIA CON TECNOLOGÍA", description: "Expertos en salud y confianza a un clic de distancia.", image: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?q=80&w=1600", cta: "Ver Catálogo", isActive: true }
       ]
     };
   });
@@ -86,7 +76,7 @@ const AppContent: React.FC = () => {
 
   const [pickupLocations, setPickupLocations] = useState<PickupLocation[]>(() => {
     const saved = localStorage.getItem('care_pickup_locations');
-    return saved ? JSON.parse(saved) : [{ id: '1', name: 'Sede Principal', address: 'Av. Salud 123', city: 'Lima', phone: '01 444 5555' }];
+    return saved ? JSON.parse(saved) : [{ id: '1', name: 'Sede Principal', address: 'Av. Principal 123', city: 'Lima', phone: '01 444 5555' }];
   });
 
   useEffect(() => {
@@ -139,44 +129,42 @@ const AppContent: React.FC = () => {
         </main>
         
         {currentPage !== 'admin' && (
-          <footer className="bg-slate-950 text-slate-400 py-20 border-t border-slate-900">
+          <footer className="bg-slate-950 text-slate-400 py-24 border-t border-slate-900">
             <div className="max-w-[1440px] mx-auto px-10">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
                 <div className="md:col-span-2 space-y-8">
-                  <div className="flex items-center gap-4">
-                    {settings.logoUrl ? (
-                      <img src={settings.logoUrl} className="h-12 object-contain" alt={settings.storeName} />
+                  <div className="flex items-center gap-5">
+                    {settings.footerLogoUrl ? (
+                      <img src={settings.footerLogoUrl} className="h-16 object-contain" alt={settings.storeName} />
+                    ) : settings.logoUrl ? (
+                      <img src={settings.logoUrl} className="h-16 object-contain brightness-0 invert" alt={settings.storeName} />
                     ) : (
-                      <div className="p-3 rounded-2xl" style={{ backgroundColor: settings.primaryColor }}><ShoppingBag className="text-white" size={24} /></div>
+                      <div className="p-4 rounded-3xl bg-emerald-500"><ShoppingBag className="text-white" size={32} /></div>
                     )}
-                    <span className="text-3xl font-bold text-white uppercase tracking-tighter">{settings.storeName}</span>
+                    <span className="text-4xl font-black text-white uppercase tracking-tighter italic">{settings.storeName}</span>
                   </div>
-                  <div className="flex gap-4">
-                    {settings.socialInstagram && <a href={settings.socialInstagram} target="_blank" className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"><Instagram size={20} /></a>}
-                    {settings.socialFacebook && <a href={settings.socialFacebook} target="_blank" className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"><Facebook size={20} /></a>}
-                    {settings.socialTikTok && <a href={settings.socialTikTok} target="_blank" className="p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors"><Music2 size={20} /></a>}
-                  </div>
+                  <p className="max-w-md text-sm leading-relaxed text-slate-500">Transformando la salud con tecnología avanzada y atención experta personalizada.</p>
                 </div>
-                <div className="space-y-6">
-                  <h4 className="text-white font-black uppercase text-xs tracking-widest">Secciones</h4>
-                  <ul className="space-y-3 text-sm">
-                    <li><button onClick={() => navigate('home')} className="hover:text-white transition-colors">Inicio</button></li>
-                    <li><button onClick={() => navigate('tracking')} className="hover:text-white transition-colors">Rastrear Pedido</button></li>
+                <div className="space-y-8">
+                  <h4 className="text-white font-black uppercase text-xs tracking-widest border-l-2 border-emerald-500 pl-4">Servicios</h4>
+                  <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
+                    <li><button onClick={() => navigate('home')} className="hover:text-emerald-500 transition-colors">Catálogo</button></li>
+                    <li><button onClick={() => navigate('tracking')} className="hover:text-emerald-500 transition-colors">Rastrear Pedido</button></li>
                   </ul>
                 </div>
-                <div className="space-y-6">
-                  <h4 className="text-white font-black uppercase text-xs tracking-widest">Soporte</h4>
-                  <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all">
-                    <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg"><MessageCircle size={20} /></div>
-                    <div className="text-left"><span className="block text-xs font-black text-white">WhatsApp</span><span className="text-[10px] text-emerald-400 font-bold">En línea</span></div>
+                <div className="space-y-8">
+                  <h4 className="text-white font-black uppercase text-xs tracking-widest border-l-2 border-emerald-500 pl-4">Asistencia</h4>
+                  <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" className="flex items-center gap-4 p-5 bg-white/5 rounded-3xl hover:bg-white/10 transition-all group">
+                    <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg"><MessageCircle size={24} /></div>
+                    <div><span className="block text-xs font-black text-white uppercase tracking-widest">WhatsApp Directo</span></div>
                   </a>
                 </div>
               </div>
-              <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em]">{settings.footerText}</p>
-                <a href="https://gaorsystem.vercel.app/" target="_blank" className="group flex items-center gap-3 p-6 bg-white/5 rounded-[2.5rem] border border-white/10 hover:bg-white/10 transition-all">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-xl"><Rocket size={20} className="text-indigo-600" /></div>
-                  <div className="text-left"><span className="block text-lg font-black text-white leading-none">GaorSystem</span><span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Global Platform</span></div>
+              <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em]">{settings.footerText}</p>
+                <a href="https://gaorsystem.vercel.app/" target="_blank" className="group flex items-center gap-5 p-8 bg-white/5 rounded-[3.5rem] border border-white/10 hover:bg-white/10 transition-all shadow-2xl relative overflow-hidden">
+                  <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform"><Rocket size={26} className="text-indigo-600" /></div>
+                  <div className="text-left"><span className="block text-xl font-black text-white tracking-tighter">GaorSystem</span><span className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Global Pharma Platform</span></div>
                 </a>
               </div>
             </div>
