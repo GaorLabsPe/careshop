@@ -14,24 +14,6 @@ export enum PrescriptionStatus {
   NotRequired = 'NotRequired'
 }
 
-export interface User {
-  email: string;
-  role: 'superadmin' | 'store_admin';
-  storeId?: string;
-}
-
-export interface StoreConfig {
-  id?: string;
-  name: string;
-  primaryColor: string;
-  accentColor: string;
-  odooUrl: string;
-  odooDb: string;
-  odooUser: string;
-  odooKey: string;
-  status?: 'active' | 'pending' | 'error';
-}
-
 export interface Product {
   id: string;
   name: string;
@@ -55,4 +37,12 @@ export interface Product {
 
 export interface CartItem extends Product {
   quantity: number;
+}
+
+// Fix: Added missing StoreConfig interface used by OdooService
+export interface StoreConfig {
+  odooUrl: string;
+  odooDb?: string;
+  odooUsername?: string;
+  odooPassword?: string;
 }
