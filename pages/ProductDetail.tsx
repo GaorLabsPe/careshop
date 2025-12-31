@@ -6,17 +6,18 @@ import {
   Minus, Pill, Info, FileText, Calendar, Building2
 } from 'lucide-react';
 import { PRODUCTS } from '../data/mockData';
-import { PrescriptionStatus } from '../types';
+import { PrescriptionStatus, Product } from '../types';
 import { useCart } from '../context/CartContext';
 
 interface ProductDetailProps {
   productId: string;
   onNavigate: (page: string, params?: any) => void;
+  externalProduct?: Product;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate, externalProduct }) => {
   const { addToCart } = useCart();
-  const product = PRODUCTS.find(p => p.id === productId);
+  const product = externalProduct || PRODUCTS.find(p => p.id === productId);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
 
@@ -45,7 +46,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
 
   return (
     <div className="bg-[#fdfdfd] min-h-screen">
-      {/* Breadcrumbs */}
       <div className="max-w-[1440px] mx-auto px-6 py-6">
         <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
           <button onClick={() => onNavigate('home')} className="hover:text-[#10B981] transition-colors">Inicio</button>
@@ -59,7 +59,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
       <div className="max-w-[1440px] mx-auto px-6 pb-24">
         <div className="bg-white rounded-[3.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col lg:flex-row">
           
-          {/* Left: Image Gallery */}
           <div className="lg:w-1/2 p-12 lg:p-20 bg-slate-50/50 flex flex-col gap-10">
             <div className="relative aspect-square bg-white rounded-[3rem] p-12 flex items-center justify-center border border-slate-100 shadow-inner group">
               <img 
@@ -83,7 +82,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
             </div>
           </div>
 
-          {/* Right: Info Area */}
           <div className="lg:w-1/2 p-12 lg:p-20 flex flex-col space-y-10">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -141,7 +139,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
                 </div>
                 <button 
                   onClick={() => addToCart(product, quantity)}
-                  className="flex-1 btn-buy py-6 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-4"
+                  className="flex-1 btn-accent py-6 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-4"
                 >
                   <ShoppingCart size={22} />
                   Añadir al Carrito
@@ -158,7 +156,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
               </div>
             </div>
 
-            {/* Product Status Badges */}
             <div className="flex flex-wrap gap-3">
               {product.prescription === PrescriptionStatus.Required && (
                 <div className="bg-slate-900 text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
@@ -172,7 +169,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
               </div>
             </div>
 
-            {/* Tabs for detailed info */}
             <div className="space-y-8">
               <div className="flex border-b border-slate-100 gap-8">
                 {tabs.map(tab => (
@@ -234,7 +230,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
           </div>
         </div>
 
-        {/* Action Bottom Mobile */}
         <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white p-6 border-t border-slate-100 flex items-center justify-between gap-6 z-50">
            <div className="flex flex-col">
               <span className="text-2xl font-black text-slate-900 tracking-tighter">S/ {product.price.toFixed(2)}</span>
@@ -242,7 +237,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ productId, onNavigate }) 
            </div>
            <button 
              onClick={() => addToCart(product, quantity)}
-             className="btn-buy flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl"
+             className="btn-accent flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl"
            >
              Comprar Ahora
            </button>

@@ -4,6 +4,8 @@ import { Product, Category, PrescriptionStatus } from '../types';
 export const PRODUCTS: Product[] = [
   {
     id: '1',
+    // Added odooId and published to satisfy Product interface
+    odooId: 101,
     name: 'Amoxicilina 500mg',
     genericName: 'Amoxicilina',
     activeIngredient: 'Amoxicilina Trihidrato',
@@ -23,10 +25,13 @@ export const PRODUCTS: Product[] = [
     ],
     laboratory: 'Genfar Labs',
     registrationNumber: 'RS-77281',
-    expiryDate: '2025-12-30'
+    expiryDate: '2025-12-30',
+    published: true
   },
   {
     id: '2',
+    // Added odooId and published to satisfy Product interface
+    odooId: 102,
     name: 'Suxnix Vitamin C + Zinc',
     genericName: 'Suplemento Vitamínico',
     activeIngredient: 'Ácido Ascórbico + Zinc',
@@ -42,10 +47,13 @@ export const PRODUCTS: Product[] = [
     thumbnails: [],
     laboratory: 'Suxnix Pharma',
     registrationNumber: 'RS-99120',
-    expiryDate: '2026-06-15'
+    expiryDate: '2026-06-15',
+    published: true
   },
   {
     id: '3',
+    // Added odooId and published to satisfy Product interface
+    odooId: 103,
     name: 'La Roche-Posay Effaclar Duo+',
     brand: 'La Roche-Posay',
     price: 24.50,
@@ -59,10 +67,13 @@ export const PRODUCTS: Product[] = [
     thumbnails: [],
     laboratory: 'L\'Oréal Division Cosmétique Active',
     registrationNumber: 'C-FR-123',
-    expiryDate: '2025-10-01'
+    expiryDate: '2025-10-01',
+    published: true
   },
   {
     id: '4',
+    // Added odooId and published to satisfy Product interface
+    odooId: 104,
     name: 'Ibuprofeno 400mg',
     genericName: 'Ibuprofeno',
     activeIngredient: 'Ibuprofeno',
@@ -79,6 +90,7 @@ export const PRODUCTS: Product[] = [
     thumbnails: [],
     laboratory: 'GSK',
     registrationNumber: 'RS-44512',
-    expiryDate: '2026-11-20'
+    expiryDate: '2026-11-20',
+    published: true
   }
 ];

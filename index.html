@@ -27,6 +27,21 @@
             font-weight: 700;
         }
 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
         .btn-action {
             background-color: var(--primary);
             color: white;
@@ -56,12 +71,6 @@
         }
         .product-shadow:hover {
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-        }
-
-        .hero-retail {
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1576091160550-2173dad99978?q=80&w=1600&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
         }
 
         .vital-gradient {
